@@ -15,9 +15,9 @@
         align-items: center;
         justify-content: center;
         height: 100vh;
-        flex-direction: column;
         text-align: center;
         transition: background 0.3s;
+        flex-direction: row;
     }
 
     .container {
@@ -58,9 +58,11 @@
     }
 
     .updates-container {
-        margin-top: 20px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
         width: 300px;
-        max-height: 200px;
         overflow-y: auto;
         background: rgba(255, 255, 255, 0.5);
         padding: 10px;
@@ -75,13 +77,15 @@
     </style>
 </head>
 <body>
-    <h1>GRAB COSMETICS</h1>
-    <p id="version" class="version">Loading version...</p>
-    <div class="btn-container">
-        <button class="btn" onclick="fetchCosmeticData()">Get Cosmetic Data!</button>
-        <button class="btn" onclick="fetchDetailedCosmeticData()">Get Detailed Cosmetic Data!</button>
+    <div class="container">
+        <h1>GRAB COSMETICS</h1>
+        <p id="version" class="version">Loading version...</p>
+        <div class="btn-container">
+            <button class="btn" onclick="fetchCosmeticData()">Get Cosmetic Data!</button>
+            <button class="btn" onclick="fetchDetailedCosmeticData()">Get Detailed Cosmetic Data!</button>
+        </div>
+        <p id="loading" class="loading">Fetching data...</p>
     </div>
-    <p id="loading" class="loading">Fetching data...</p>
     <div class="updates-container">
         <h2>UPDATES</h2>
         <div id="updates"></div>
@@ -104,7 +108,7 @@
             const response = await fetch('https://api.slin.dev/grab/v1/get_shop_products?version=3');
             const data = await response.json();
             const dataArray = Object.values(data).map(item => [item.title, item.price_currency || "N/A"]);
-            const worksheet = XLSX.utils.aoa_to_sheet([['Pack Name', 'Cost'], ...dataArray]);
+            const worksheet = XLSX.utils.aoa_to_sheet([["Pack Name", "Cost"], ...dataArray]);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Cosmetic Data");
             XLSX.writeFile(workbook, "cosmetic_data.xlsx");
@@ -120,7 +124,7 @@
             const response = await fetch('https://api.slin.dev/grab/v1/get_shop_products?version=3');
             const data = await response.json();
             const dataArray = Object.values(data).map(item => [item.title, item.price_currency || "N/A", item.items.length, item.items.join(", ")]);
-            const worksheet = XLSX.utils.aoa_to_sheet([['Pack Name', 'Cost', 'Item Count', 'Items'], ...dataArray]);
+            const worksheet = XLSX.utils.aoa_to_sheet([["Pack Name", "Cost", "Item Count", "Items"], ...dataArray]);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Detailed Cosmetic Data");
             XLSX.writeFile(workbook, "detailed_cosmetic_data.xlsx");
