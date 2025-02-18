@@ -58,16 +58,39 @@
     }
 
     .updates-container {
-        position: absolute;
-        right: 0;
+        position: fixed;
+        right: -320px;
         top: 0;
         bottom: 0;
         width: 300px;
         overflow-y: auto;
-        background: rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.9);
         padding: 10px;
-        border-radius: 10px;
+        border-radius: 10px 0 0 10px;
         text-align: center;
+        transition: right 0.3s;
+        box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .updates-container.show {
+        right: 0;
+    }
+
+    .toggle-updates {
+        position: fixed;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 51, 102, 0.6);
+        color: white;
+        padding: 10px;
+        border-radius: 10px 0 0 10px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .toggle-updates:hover {
+        background: rgba(0, 26, 41, 0.7);
     }
 
     .update-box {
@@ -92,11 +115,18 @@
         <button class="btn" onclick="fetchDetailedCosmeticData()">Get Detailed Cosmetic Data!</button>
     </div>
     <p id="loading" class="loading">Fetching data...</p>
-    <div class="updates-container">
+    
+    <div class="toggle-updates" onclick="toggleUpdates()">Updates</div>
+    <div class="updates-container" id="updatesContainer">
         <h2>UPDATES</h2>
         <div id="updates"></div>
     </div>
+    
     <script>
+    function toggleUpdates() {
+        document.getElementById('updatesContainer').classList.toggle('show');
+    }
+
     async function fetchVersionAndUpdates() {
         try {
             const response = await fetch('updates.txt');
@@ -104,16 +134,28 @@
             const lines = text.split('\n').filter(line => line.trim() !== "");
             
             let version = "Unknown";
-            let updates = [];
+            let updates = "";
+            let currentVersion = "";
+            let versionUpdates = "";
             
-            for (let line of lines) {
+            for (let line of lines.reverse()) { // Reverse to get latest at top
                 if (line.startsWith("Version ")) {
-                    version = line.split(" ")[1];
-                    break;
+                    if (currentVersion) {
+                        updates += `<div class='update-box'><strong>${currentVersion}</strong><br>${versionUpdates}</div>`;
+                    }
+                    currentVersion = line;
+                    versionUpdates = "";
+                    if (version === "Unknown") {
+                        version = line.split(" ")[1];
+                    }
+                } else {
+                    versionUpdates += `${line}<br>`;
                 }
             }
             
-            updates = lines.map(update => `<div class='update-box'>${update}</div>`).join('');
+            if (currentVersion) {
+                updates += `<div class='update-box'><strong>${currentVersion}</strong><br>${versionUpdates}</div>`;
+            }
             
             document.getElementById('version').innerText = `Version: ${version}`;
             document.getElementById('updates').innerHTML = updates;
