@@ -1,11 +1,26 @@
-Version 1.6 - 
+Version 1.5
+- removed excel buttons
+- proper item names using new api
+
+Version 1.6
 - changed how the spreadsheet looks
-- removed test pack (again)
+- removed test pack again
 
-Version 1.5 - 
-- removed excel buttons because suck
-- Proper item names instead of file names
+Version 1.7
+- updated ui 
+- added button animations
 
-Version 1.4 - UI
-- added a gradient background 
-- fixed api thing
+Version 1.7
+- fixed normal spreadsheet not exporting
+- fixed version number being wrong
+- added dark mode
+
+Version 1.8
+- removed dark mode
+- moved updates and made them larger
+- changed how the update and version number is stored
+
+Version 1.9
+- added support for the new combined file
+- updates text now centered 
+
