@@ -102,14 +102,21 @@
             const response = await fetch('updates.txt');
             const text = await response.text();
             const lines = text.split('\n').filter(line => line.trim() !== "");
-
-            if (lines.length > 0) {
-                document.getElementById('version').innerText = `Version: ${lines[0]}`;
-                document.getElementById('updates').innerHTML = lines.slice(1).map(update => `<div class='update-box'>${update}</div>`).join('');
-            } else {
-                document.getElementById('version').innerText = "Version: Unknown";
-                document.getElementById('updates').innerText = "No updates available.";
+            
+            let version = "Unknown";
+            let updates = [];
+            
+            for (let line of lines) {
+                if (line.startsWith("Version ")) {
+                    version = line.split(" ")[1];
+                    break;
+                }
             }
+            
+            updates = lines.map(update => `<div class='update-box'>${update}</div>`).join('');
+            
+            document.getElementById('version').innerText = `Version: ${version}`;
+            document.getElementById('updates').innerHTML = updates;
         } catch (error) {
             document.getElementById('version').innerText = "Version: Unknown";
             document.getElementById('updates').innerText = "Failed to load updates.";
@@ -117,7 +124,7 @@
     }
 
     fetchVersionAndUpdates();
-
+        
     async function fetchCosmeticData() {
         document.getElementById('loading').style.display = "block";
         try {
