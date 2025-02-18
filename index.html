@@ -15,9 +15,9 @@
         align-items: center;
         justify-content: center;
         height: 100vh;
+        flex-direction: column;
         text-align: center;
         transition: background 0.3s;
-        flex-direction: row;
     }
 
     .container {
@@ -67,7 +67,15 @@
         background: rgba(255, 255, 255, 0.5);
         padding: 10px;
         border-radius: 10px;
-        text-align: left;
+        text-align: center;
+    }
+
+    .update-box {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        text-align: center;
     }
 
     .loading {
@@ -77,30 +85,38 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>GRAB COSMETICS</h1>
-        <p id="version" class="version">Loading version...</p>
-        <div class="btn-container">
-            <button class="btn" onclick="fetchCosmeticData()">Get Cosmetic Data!</button>
-            <button class="btn" onclick="fetchDetailedCosmeticData()">Get Detailed Cosmetic Data!</button>
-        </div>
-        <p id="loading" class="loading">Fetching data...</p>
+    <h1>GRAB COSMETICS</h1>
+    <p id="version" class="version">Loading version...</p>
+    <div class="btn-container">
+        <button class="btn" onclick="fetchCosmeticData()">Get Cosmetic Data!</button>
+        <button class="btn" onclick="fetchDetailedCosmeticData()">Get Detailed Cosmetic Data!</button>
     </div>
+    <p id="loading" class="loading">Fetching data...</p>
     <div class="updates-container">
         <h2>UPDATES</h2>
         <div id="updates"></div>
     </div>
     <script>
-    async function fetchVersion() {
+    async function fetchVersionAndUpdates() {
         try {
-            const response = await fetch('version.txt');
+            const response = await fetch('updates.txt');
             const text = await response.text();
-            document.getElementById('version').innerText = `Version: ${text.trim()}`;
+            const lines = text.split('\n').filter(line => line.trim() !== "");
+
+            if (lines.length > 0) {
+                document.getElementById('version').innerText = `Version: ${lines[0]}`;
+                document.getElementById('updates').innerHTML = lines.slice(1).map(update => `<div class='update-box'>${update}</div>`).join('');
+            } else {
+                document.getElementById('version').innerText = "Version: Unknown";
+                document.getElementById('updates').innerText = "No updates available.";
+            }
         } catch (error) {
             document.getElementById('version').innerText = "Version: Unknown";
+            document.getElementById('updates').innerText = "Failed to load updates.";
         }
     }
-    fetchVersion();
+
+    fetchVersionAndUpdates();
 
     async function fetchCosmeticData() {
         document.getElementById('loading').style.display = "block";
