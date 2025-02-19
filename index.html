@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+this is my website <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -17,15 +17,19 @@
         height: 100vh;
         flex-direction: column;
         text-align: center;
+        transition: background 0.3s;
     }
 
     .container {
         background-color: rgba(255, 255, 255, 0.1);
         padding: 20px;
         border-radius: 10px;
+        text-align: center;
         box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
-        max-width: 400px;
-        width: 90%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 90%;
     }
 
     .btn-container {
@@ -45,7 +49,7 @@
         color: white;
         border-radius: 8px;
         transition: background-color 0.3s, transform 0.2s;
-        width: 100%;
+        width: 250px;
     }
 
     .btn:hover {
@@ -53,35 +57,117 @@
         transform: scale(1.05);
     }
 
-    .spinner {
-        display: none;
-        width: 30px;
-        height: 30px;
-        border: 4px solid rgba(0, 0, 0, 0.2);
-        border-top: 4px solid #327DAF;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin-top: 10px;
+    .updates-container {
+        position: fixed;
+        right: -320px;
+        top: 0;
+        bottom: 0;
+        width: 300px;
+        overflow-y: auto;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 10px;
+        border-radius: 10px 0 0 10px;
+        text-align: center;
+        transition: right 0.3s;
+        box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
     }
 
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+    .updates-container.show {
+        right: 0;
+    }
+
+    .toggle-updates {
+        position: fixed;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 51, 102, 0.6);
+        color: white;
+        padding: 10px;
+        border-radius: 10px 0 0 10px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .toggle-updates:hover {
+        background: rgba(0, 26, 41, 0.7);
+    }
+
+    .update-box {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    .loading {
+        display: none;
+        color: gray;
     }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>GRAB COSMETICS</h1>
-        <p id="version" class="version">Loading version...</p>
-        <div class="btn-container">
-            <button class="btn" onclick="fetchCosmeticData()">Get Cosmetic Data!</button>
-            <button class="btn" onclick="fetchDetailedCosmeticData()">Get Detailed Cosmetic Data!</button>
-            <div class="spinner" id="spinner"></div>
-        </div>
+    <h1>GRAB COSMETICS</h1>
+    <p id="version" class="version">Loading version...</p>
+    <div class="btn-container">
+        <button class="btn" onclick="fetchCosmeticData()">Get Cosmetic Data!</button>
+        <button class="btn" onclick="fetchDetailedCosmeticData()">Get Detailed Cosmetic Data!</button>
+    </div>
+    <p id="loading" class="loading">Fetching data...</p>
+    
+    <div class="toggle-updates" onclick="toggleUpdates()">Updates</div>
+    <div class="updates-container" id="updatesContainer">
+        <h2>UPDATES</h2>
+        <div id="updates"></div>
     </div>
     
     <script>
+    function toggleUpdates() {
+        document.getElementById('updatesContainer').classList.toggle('show');
+    }
+
+    async function fetchVersionAndUpdates() {
+        try {
+            const response = await fetch('updates.txt');
+            const text = await response.text();
+            const lines = text.split('\n').filter(line => line.trim() !== "");
+            
+            let version = "Unknown";
+            let updates = "";
+            let currentVersion = "";
+            let versionUpdates = "";
+            
+            for (let line of lines.reverse()) { // Reverse to get latest at top
+                if (line.startsWith("Version ")) {
+                    if (currentVersion) {
+                        updates += <div class='update-box'><strong>${currentVersion}</strong><br>${versionUpdates}</div>;
+                    }
+                    currentVersion = line;
+                    versionUpdates = "";
+                    if (version === "Unknown") {
+                        version = line.split(" ")[1];
+                    }
+                } else {
+                    versionUpdates += ${line}<br>;
+                }
+            }
+            
+            if (currentVersion) {
+                updates += <div class='update-box'><strong>${currentVersion}</strong><br>${versionUpdates}</div>;
+            }
+            
+            document.getElementById('version').innerText = Version: ${version};
+            document.getElementById('updates').innerHTML = updates;
+        } catch (error) {
+            document.getElementById('version').innerText = "Version: Unknown";
+            document.getElementById('updates').innerText = "Failed to load updates.";
+        }
+    }
+
+    fetchVersionAndUpdates();
+        
+       <script>
     let cachedData = null;
 
     async function fetchData() {
@@ -126,6 +212,3 @@
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Detailed Cosmetic Data');
         XLSX.writeFile(workbook, 'detailed_cosmetic_data.xlsx');
     }
-    </script>
-</body>
-</html>
