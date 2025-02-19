@@ -59,25 +59,6 @@
         transform: scale(1.05);
     }
 
-    .tooltip {
-        position: absolute;
-        background: rgba(0, 51, 102, 0.9);
-        color: white;
-        padding: 5px;
-        border-radius: 5px;
-        font-size: 14px;
-        white-space: nowrap;
-        opacity: 0;
-        transition: opacity 0.3s;
-        top: 50%;
-        left: 270px;
-        transform: translateY(-50%);
-    }
-
-    .btn:hover .tooltip {
-        opacity: 1;
-    }
-
     .updates-container {
         position: fixed;
         right: -320px;
@@ -114,6 +95,23 @@
         background: rgba(0, 26, 41, 0.7);
     }
 
+    .close-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: red;
+        color: white;
+        border: none;
+        padding: 5px 8px;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .close-btn:hover {
+        background: darkred;
+    }
+
     .update-box {
         background: rgba(255, 255, 255, 0.8);
         padding: 10px;
@@ -138,6 +136,7 @@
     
     <div class="toggle-updates" onclick="toggleUpdates()">Updates</div>
     <div class="updates-container" id="updatesContainer">
+        <button class="close-btn" onclick="toggleUpdates()">X</button>
         <h2>UPDATES</h2>
         <div id="updates"></div>
     </div>
@@ -145,11 +144,7 @@
     <script>
     function toggleUpdates() {
         const updatesContainer = document.getElementById('updatesContainer');
-        if (updatesContainer.classList.contains('show')) {
-            updatesContainer.classList.remove('show');
-        } else {
-            updatesContainer.classList.add('show');
-        }
+        updatesContainer.classList.toggle('show');
     }
 
     async function fetchVersionAndUpdates() {
