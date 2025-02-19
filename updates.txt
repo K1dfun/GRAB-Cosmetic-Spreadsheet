@@ -23,4 +23,10 @@ Version 1.8
 Version 1.9
 - added support for the new combined file
 - updates text now centered 
+- optimised the ui and stuff for mobile devices
+- changed how loading is shown
+- also does some extra checking with the spreadsheet export
+
+
+
 
