@@ -20,95 +20,136 @@
         transition: background 0.3s;
     }
 
-    .update-wrapper {
+    .container {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 90%;
+    }
+
+    .btn-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+        position: relative;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 18px;
+        cursor: pointer;
+        border: none;
+        background-color: rgba(0, 51, 102, 0.6);
+        color: white;
+        border-radius: 8px;
+        transition: background-color 0.3s, transform 0.2s;
+        width: 250px;
+        position: relative;
+    }
+
+    .btn:hover {
+        background-color: rgba(0, 26, 41, 0.7);
+        transform: scale(1.05);
+    }
+
+    .tooltip {
+        position: absolute;
+        background: rgba(0, 51, 102, 0.9);
+        color: white;
+        padding: 5px;
+        border-radius: 5px;
+        font-size: 14px;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.3s;
+        top: 50%;
+        left: 270px;
+        transform: translateY(-50%);
+    }
+
+    .btn:hover .tooltip {
+        opacity: 1;
+    }
+
+    .updates-container {
         position: fixed;
-        top: 10px;
-        right: 10px;
-        text-align: right;
+        right: -320px;
+        top: 0;
+        bottom: 0;
+        width: 300px;
+        overflow-y: auto;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 10px;
+        border-radius: 10px 0 0 10px;
+        text-align: center;
+        transition: right 0.3s;
+        box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .updates-container.show {
+        right: 0;
+    }
+
+    .toggle-updates {
+        position: fixed;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 51, 102, 0.6);
+        color: white;
+        padding: 10px;
+        border-radius: 10px 0 0 10px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .toggle-updates:hover {
+        background: rgba(0, 26, 41, 0.7);
     }
 
     .update-box {
         background: rgba(255, 255, 255, 0.8);
         padding: 10px;
-        border-radius: 8px;
-        font-size: 14px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        margin-bottom: 5px;
-    }
-
-    .history-btn {
-        background: rgba(0, 51, 102, 0.6);
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-
-    .history-btn:hover {
-        background: rgba(0, 26, 41, 0.7);
-    }
-
-    .history-container {
-        display: none;
-        position: fixed;
-        top: 50px;
-        right: 10px;
-        width: 280px;
-        max-height: 300px;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 10px;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-        overflow-y: auto;
-        padding: 10px;
-        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-    }
-
-    .history-container.show {
-        display: block;
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    .close-btn {
-        background: red;
-        color: white;
-        border: none;
-        padding: 5px;
-        cursor: pointer;
-        border-radius: 6px;
-        float: right;
-    }
-
-    .close-btn:hover {
-        background: darkred;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        text-align: center;
     }
     </style>
 </head>
 <body>
     <h1>GRAB COSMETICS</h1>
     <p id="version" class="version">Loading version...</p>
-
-    <div class="update-wrapper">
-        <div class="update-box">
-            <strong id="current-version">Version: Unknown</strong>
-            <br>
-            <span id="current-update">Fetching latest update...</span>
-        </div>
-        <button class="history-btn" onclick="toggleHistory()">Show Version History</button>
+    <div class="btn-container">
+        <button class="btn" onclick="fetchCosmeticData()">Get Cosmetic Data!
+            <span class="tooltip">Pack name, Cost</span>
+        </button>
+        <button class="btn" onclick="fetchDetailedCosmeticData()">Get Detailed Cosmetic Data!
+            <span class="tooltip">Pack name, Cost, No of items, and Item names</span>
+        </button>
     </div>
-
-    <div class="history-container" id="historyContainer">
-        <button class="close-btn" onclick="toggleHistory()">X</button>
-        <h2>Version History</h2>
+    <p id="loading" class="loading">Fetching data...</p>
+    
+    <div class="toggle-updates" onclick="toggleUpdates()">Updates</div>
+    <div class="updates-container" id="updatesContainer">
+        <h2>UPDATES</h2>
         <div id="updates"></div>
     </div>
-
+    
     <script>
-    function toggleHistory() {
-        const historyContainer = document.getElementById('historyContainer');
-        historyContainer.classList.toggle('show');
+    function toggleUpdates() {
+        const updatesContainer = document.getElementById('updatesContainer');
+        if (updatesContainer.classList.contains('show')) {
+            updatesContainer.classList.remove('show');
+        } else {
+            updatesContainer.classList.add('show');
+        }
     }
 
     async function fetchVersionAndUpdates() {
@@ -116,17 +157,16 @@
             const response = await fetch('updates.txt');
             const text = await response.text();
             const lines = text.split('\n').filter(line => line.trim() !== "");
-
+            
             let version = "Unknown";
             let updates = "";
             let currentVersion = "";
             let versionUpdates = "";
-            let latestUpdate = "";
-
-            for (let line of lines.reverse()) {
+            
+            for (let line of lines.reverse()) { // Reverse to get latest at top
                 if (line.startsWith("Version ")) {
                     if (currentVersion) {
-                        updates += `<div><strong>${currentVersion}</strong><br>${versionUpdates}</div><hr>`;
+                        updates += `<div class='update-box'><strong>${currentVersion}</strong><br>${versionUpdates}</div>`;
                     }
                     currentVersion = line;
                     versionUpdates = "";
@@ -136,22 +176,16 @@
                 } else {
                     versionUpdates += `${line}<br>`;
                 }
-
-                if (!latestUpdate && !line.startsWith("Version ")) {
-                    latestUpdate = line;
-                }
             }
-
+            
             if (currentVersion) {
-                updates += `<div><strong>${currentVersion}</strong><br>${versionUpdates}</div>`;
+                updates += `<div class='update-box'><strong>${currentVersion}</strong><br>${versionUpdates}</div>`;
             }
-
-            document.getElementById('current-version').innerText = `Version: ${version}`;
-            document.getElementById('current-update').innerHTML = latestUpdate || "No updates available";
+            
+            document.getElementById('version').innerText = `Version: ${version}`;
             document.getElementById('updates').innerHTML = updates;
         } catch (error) {
-            document.getElementById('current-version').innerText = "Version: Unknown";
-            document.getElementById('current-update').innerText = "Failed to load updates.";
+            document.getElementById('version').innerText = "Version: Unknown";
             document.getElementById('updates').innerText = "Failed to load updates.";
         }
     }
