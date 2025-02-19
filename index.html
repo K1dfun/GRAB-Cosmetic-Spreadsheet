@@ -38,6 +38,7 @@
         align-items: center;
         gap: 10px;
         margin-top: 20px;
+        position: relative;
     }
 
     .btn {
@@ -50,11 +51,31 @@
         border-radius: 8px;
         transition: background-color 0.3s, transform 0.2s;
         width: 250px;
+        position: relative;
     }
 
     .btn:hover {
         background-color: rgba(0, 26, 41, 0.7);
         transform: scale(1.05);
+    }
+
+    .tooltip {
+        position: absolute;
+        background: rgba(0, 51, 102, 0.9);
+        color: white;
+        padding: 5px;
+        border-radius: 5px;
+        font-size: 14px;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.3s;
+        top: 50%;
+        left: 270px;
+        transform: translateY(-50%);
+    }
+
+    .btn:hover .tooltip {
+        opacity: 1;
     }
 
     .updates-container {
@@ -100,19 +121,18 @@
         border-radius: 5px;
         text-align: center;
     }
-
-    .loading {
-        display: none;
-        color: gray;
-    }
     </style>
 </head>
 <body>
     <h1>GRAB COSMETICS</h1>
     <p id="version" class="version">Loading version...</p>
     <div class="btn-container">
-        <button class="btn" onclick="fetchCosmeticData()">Get Cosmetic Data!</button>
-        <button class="btn" onclick="fetchDetailedCosmeticData()">Get Detailed Cosmetic Data!</button>
+        <button class="btn" onclick="fetchCosmeticData()">Get Cosmetic Data!
+            <span class="tooltip">Pack name, Cost</span>
+        </button>
+        <button class="btn" onclick="fetchDetailedCosmeticData()">Get Detailed Cosmetic Data!
+            <span class="tooltip">Pack name, Cost, No of items, and Item names</span>
+        </button>
     </div>
     <p id="loading" class="loading">Fetching data...</p>
     
@@ -124,7 +144,12 @@
     
     <script>
     function toggleUpdates() {
-        document.getElementById('updatesContainer').classList.toggle('show');
+        const updatesContainer = document.getElementById('updatesContainer');
+        if (updatesContainer.classList.contains('show')) {
+            updatesContainer.classList.remove('show');
+        } else {
+            updatesContainer.classList.add('show');
+        }
     }
 
     async function fetchVersionAndUpdates() {
@@ -138,7 +163,7 @@
             let currentVersion = "";
             let versionUpdates = "";
             
-            for (let line of lines.reverse()) {
+            for (let line of lines.reverse()) { // Reverse to get latest at top
                 if (line.startsWith("Version ")) {
                     if (currentVersion) {
                         updates += `<div class='update-box'><strong>${currentVersion}</strong><br>${versionUpdates}</div>`;
@@ -166,6 +191,7 @@
     }
 
     fetchVersionAndUpdates();
+        
     </script>
      <script>
         async function fetchItemNames() {
