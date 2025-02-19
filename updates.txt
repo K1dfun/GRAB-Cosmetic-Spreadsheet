@@ -28,5 +28,6 @@ Version 1.9
 - also does some extra checking with the spreadsheet export
 
 Version 1.9.1
-- Maybe fixed buttons not work as supposed to
+- reverted changes
+
 
